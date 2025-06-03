@@ -32,7 +32,7 @@ const CaptionGenerator = () => {
     formData.append("language", language);
 
     try {
-      const res = await fetch("http://localhost:8000/generate", {
+      const res = await fetch("https://captionthis.onrender.com/generate", {
         method: "POST",
         body: formData,
       });
