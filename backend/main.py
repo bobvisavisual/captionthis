@@ -53,11 +53,11 @@ async def generate_caption(
         }
 
         response = requests.post(API_URL, json=payload, headers=headers)
-data = response.json()
-print("🔍 OpenRouter raw response:", data) 
-# Add this
+        data = response.json()
+        print("🔍 OpenRouter raw response:", data) 
+        # Add this
 
-caption = data["choices"][0]["message"]["content"].strip()
+        caption = data["choices"][0]["message"]["content"].strip()
 
         return JSONResponse(content={"caption": caption})
 
