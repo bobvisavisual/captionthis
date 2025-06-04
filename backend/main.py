@@ -41,7 +41,7 @@ async def generate_caption(
         prompt = f"Generate a {type} caption in {lang} for the given image."
 
         payload = {
-            "model": "mistralai/mistral-7b-instruct",
+            "model": "deepseek/deepseek-vl",
             "messages": [
                 {"role": "system", "content": "You are a caption generator."},
                 {"role": "user", "content": prompt}
