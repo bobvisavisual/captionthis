@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # Load from environment for safety
-API_KEY = os.getenv("OPENROUTER_API_KEY")
+API_KEY = os.getenv("OPENROUTER_API_KEY") or "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"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 @app.post("/generate")
