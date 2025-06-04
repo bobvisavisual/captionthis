@@ -57,6 +57,14 @@ async def generate_caption(
         response = requests.post(API_URL, json=payload, headers=headers)
         data = response.json()
 
+        # Log the response for debugging
+        print("🔍 OpenRouter response:", data)
+
+        if "choices" not in data:
+            # Error from OpenRouter, return message for debugging
+            error_msg = data.get("error", {}).get("message", "Unknown error")
+            return JSONResponse(content={"caption": f"API Error: {error_msg}"}, status_code=500)
+
         # Check for valid response
         caption = data["choices"][0]["message"]["content"].strip()
         return JSONResponse(content={"caption": caption})
