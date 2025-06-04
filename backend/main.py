@@ -34,7 +34,7 @@ async def generate_caption(
         prompt = f"<image>\nGenerate a {type.lower()} caption in {lang} for the photo above."
 
         payload = {
-            "model": "deepseek-ai/deepseek-vl-7b",
+            "model": "deepseek/deepseek-chat-v3-0324:free",
             "messages": [
                 {
                     "role": "user",
