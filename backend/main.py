@@ -5,8 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 import base64
-import io
-from PIL import Image
+import os
 
 app = FastAPI()
 
@@ -19,9 +18,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Replace with your DeepSeek or OpenRouter key
-API_KEY = "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"
-API_URL = "https://openrouter.ai/api/v1/chat/completions"  # or DeepSeek API URL
+# Load from environment for safety
+API_KEY = os.getenv("OPENROUTER_API_KEY") or "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"
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 @app.post("/generate")
 async def generate_caption(
@@ -36,12 +35,11 @@ async def generate_caption(
 
         # Language mapping
         lang_map = {"en": "English", "ms": "Malay"}
-        lang = lang_map.get(language, "English")
+        lang = lang_map.get(language.lower(), "English")
 
-        # Prompt for AI
+        # Prompt
         prompt = f"Generate a {type} caption in {lang} for the given image."
 
-        # Example using OpenRouter (you may adjust for DeepSeek directly)
         payload = {
             "model": "deepseek-chat",
             "messages": [
@@ -57,10 +55,21 @@ async def generate_caption(
         }
 
         response = requests.post(API_URL, json=payload, headers=headers)
+
+        if response.status_code != 200:
+            print("❌ OpenRouter API error:", response.status_code, response.text)
+            return JSONResponse(status_code=500, content={"caption": "Failed to generate caption. (API error)"})
+
         data = response.json()
+
+        # Check if 'choices' exists
+        if "choices" not in data or not data["choices"]:
+            print("⚠️ Unexpected response format:", data)
+            return JSONResponse(status_code=500, content={"caption": "Failed to generate caption. (Invalid API response)"})
 
         caption = data["choices"][0]["message"]["content"].strip()
         return JSONResponse(content={"caption": caption})
 
     except Exception as e:
-        return JSONResponse(content={"caption": f"Error: {str(e)}"}, status_code=500)
+        print("❌ Exception occurred:", str(e))
+        return JSONResponse(status_code=500, content={"caption": f"Error: {str(e)}"})
