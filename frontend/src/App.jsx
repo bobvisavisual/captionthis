@@ -27,7 +27,7 @@ const App = () => {
     formData.append("language", language);
 
     try {
-      const res = await fetch("https://your-api-url.onrender.com/generate", {
+      const res = await fetch("https://captionthis.onrender.com/generate", {
         method: "POST",
         body: formData,
       });
