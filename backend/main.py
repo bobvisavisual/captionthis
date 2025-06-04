@@ -20,7 +20,7 @@ app.add_middleware(
 )
 
 # Replace with your DeepSeek or OpenRouter key
-API_KEY = "your_api_key_here"
+API_KEY = "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"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"  # or DeepSeek API URL
 
 @app.post("/generate")
