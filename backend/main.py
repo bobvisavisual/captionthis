@@ -1,15 +1,14 @@
-# backend/main.py - FastAPI server for AI Caption Generator
+# backend/main.py
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 import base64
-import os
 
 app = FastAPI()
 
-# Allow frontend access
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,7 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load from environment for safety
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -29,24 +27,25 @@ async def generate_caption(
     language: str = Form(...)
 ):
     try:
-        # Convert image to base64
-        image_data = await image.read()
-        base64_image = base64.b64encode(image_data).decode("utf-8")
+        # Read and encode the image as base64
+        image_bytes = await image.read()
+        base64_img = base64.b64encode(image_bytes).decode("utf-8")
+        image_data_uri = f"data:image/jpeg;base64,{base64_img}"
 
-        # Language mapping
         lang_map = {"en": "English", "ms": "Malay"}
-        lang = lang_map.get(language.lower(), "English")
+        lang = lang_map.get(language, "English")
 
-        # Prompt
-        prompt = f"Generate a {type} caption in {lang} for the given image."
+        prompt = f"Generate a {type} caption in {lang} for this image."
 
         payload = {
             "model": "deepseek/deepseek-vl",
             "messages": [
-                {"role": "system", "content": "You are a caption generator."},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": image_data_uri}}
+                ]}
             ],
-            "max_tokens": 80
+            "max_tokens": 100
         }
 
         headers = {
@@ -55,21 +54,11 @@ async def generate_caption(
         }
 
         response = requests.post(API_URL, json=payload, headers=headers)
-
-        if response.status_code != 200:
-            print("❌ OpenRouter API error:", response.status_code, response.text)
-            return JSONResponse(status_code=500, content={"caption": "Failed to generate caption. (API error)"})
-
         data = response.json()
 
-        # Check if 'choices' exists
-        if "choices" not in data or not data["choices"]:
-            print("⚠️ Unexpected response format:", data)
-            return JSONResponse(status_code=500, content={"caption": "Failed to generate caption. (Invalid API response)"})
-
+        # Check for valid response
         caption = data["choices"][0]["message"]["content"].strip()
         return JSONResponse(content={"caption": caption})
 
     except Exception as e:
-        print("❌ Exception occurred:", str(e))
-        return JSONResponse(status_code=500, content={"caption": f"Error: {str(e)}"})
+        return JSONResponse(content={"caption": f"Error: {str(e)}"}, status_code=500)
