@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 import base64
+import re
 
 app = FastAPI()
 
@@ -68,28 +69,31 @@ async def generate_caption(
 
         full_text = data["choices"][0]["message"]["content"].strip()
 
-        # Clean and filter lines
+        # Remove intro if detected
         blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
-
-        # Skip the intro if it looks like a description
         if blocks and ("caption" in blocks[0].lower() or "here are" in blocks[0].lower()):
             blocks = blocks[1:]
 
-        # Group each block into a dict (caption and hashtags split from the line)
         grouped = []
-        for line in blocks:
-            parts = line.rsplit("#", 1)
-            if "#" in line:
-                caption_part, hashtags_part = parts[0], "#" + parts[1]
+        i = 0
+
+        while i < len(blocks):
+            # Match numbered caption (e.g., '1.', '2.', etc.)
+            if re.match(r"^\\d+\\.", blocks[i]):
+                caption = blocks[i]
+                i += 1
+                hashtags = []
+
+                while i < len(blocks) and not re.match(r"^\\d+\\.", blocks[i]):
+                    hashtags.append(blocks[i])
+                    i += 1
+
                 grouped.append({
-                    "caption": caption_part.strip(),
-                    "hashtags": hashtags_part.strip()
+                    "caption": caption,
+                    "hashtags": ' '.join(hashtags)
                 })
             else:
-                grouped.append({
-                    "caption": line.strip(),
-                    "hashtags": ""
-                })
+                i += 1  # Skip anything unexpected
 
         return JSONResponse(content={"captions": grouped})
 
