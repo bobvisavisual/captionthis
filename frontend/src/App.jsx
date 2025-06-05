@@ -33,7 +33,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center justify-center px-4 py-8">
-      <h1 className="text-4xl md:text-6xl font-bold mb-8 text-center">Caption This</h1>
+      <h1 className="text-4xl md:text-6xl font-bold mb-8 text-center">Caption It!</h1>
+	  <h2 className="text-1xl md:text-2xl font-bold mb-8 text-center">Caption This</h2>
 
       <form
         onSubmit={handleSubmit}
@@ -52,20 +53,25 @@ function App() {
 
         <div>
 			<label className="block mb-2 font-medium">Choose caption style:</label>
-			<div className="grid grid-cols-3 gap-3 mb-6">
-			{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'].map((style, index) => (
+			<div className="grid grid-cols-3 gap-2 mt-4">
+				{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'].map((style) => (
 				<button
 					key={style}
 					type="button"
-					onClick={() => setCaptionType(style)}
-					className={`px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
-						${captionType === style ? 'bg-blue-700' : style === 'random' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-500 hover:bg-blue-600'}
-						${index === 5 ? 'col-span-3 text-center' : ''}`}
-					>
-					{style.charAt(0).toUpperCase() + style.slice(1)}
+					className={`py-2 px-4 rounded-lg text-white font-semibold transition-colors ${
+					selectedStyle === style
+						? 'bg-blue-600'
+						: style === 'random'
+						? 'bg-purple-500 hover:bg-purple-600'
+						: 'bg-gray-500 hover:bg-gray-600'
+					}`}
+					onClick={() => setSelectedStyle(style)}
+				>
+				{style.charAt(0).toUpperCase() + style.slice(1)}
 				</button>
-			))}
+				))}
 			</div>
+
         </div>
 
         <div>
