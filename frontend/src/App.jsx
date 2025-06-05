@@ -209,8 +209,8 @@ function App() {
           <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
           {captions.map((cap, idx) => (
             <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
-              <p className="text-lg font-medium mb-1">{cap.caption}</p>
-              <p className="text-lg text-gray-600 mb-3">{cap.hashtags}</p>
+              <p className="text-sm font-medium mb-1">{cap.caption}</p>
+              <p className="text-sm text-gray-600 mb-3">{cap.hashtags}</p>
               <div className="text-right">
                 <button
                   onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
