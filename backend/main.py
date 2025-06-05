@@ -79,4 +79,4 @@ async def generate_caption(
         return JSONResponse(content={"captions": grouped})
 
     except Exception as e:
-        return JSONResponse(content={"captions": [f"Error: {str(e)}"]}, status_code=500)
+        return JSONResponse(content={"captions": [{"caption": f"API Error: {error_msg}", "hashtags": ""}]}, status_code=500)
