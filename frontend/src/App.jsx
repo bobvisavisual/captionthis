@@ -41,11 +41,6 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setCaptions([
-      { caption: "A day well spent with loved ones.", hashtags: "#familytime #memories" },
-      { caption: "Laughter is the best kind of therapy.", hashtags: "#happyvibes #goodtimes" },
-      { caption: "Chillin’ with my favorite humans.", hashtags: "#weekendfun #squadgoals" }
-    ]);
     
     const formData = new FormData();
     formData.append("image", image);
