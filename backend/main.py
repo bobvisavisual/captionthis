@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 import base64
-import re
 
 app = FastAPI()
 
@@ -68,7 +67,9 @@ async def generate_caption(
             return JSONResponse(content={"captions": [{"caption": f"API Error: {error_msg}", "hashtags": ""}]}, status_code=500)
 
         full_text = data["choices"][0]["message"]["content"].strip()
-
+        
+        import re
+        
         # Remove intro if detected
         blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
         if blocks and ("caption" in blocks[0].lower() or "here are" in blocks[0].lower()):
