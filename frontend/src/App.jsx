@@ -41,6 +41,11 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!image) {
+      alert("Please upload an image first.");
+      return;
+    }
     
     const formData = new FormData();
     formData.append("image", image);
@@ -49,18 +54,18 @@ function App() {
     formData.append("details", details);
 
     try {
-  const response = await axios.post("https://captionthis.onrender.com/generate", formData);
-  const result = response.data.captions;
+      const response = await axios.post("https://captionthis.onrender.com/generate", formData);
+      const result = response.data.captions;
 
-  // Normalize in case it's an array of strings
-  const safeCaptions = result.map((c) =>
-    typeof c === "string" ? { caption: c, hashtags: "" } : c
-  );
+      // Normalize in case it's an array of strings
+      const safeCaptions = result.map((c) =>
+        typeof c === "string" ? { caption: c, hashtags: "" } : c
+      );
 
-  setCaptions(safeCaptions);
-} catch (error) {
-  setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
-}
+      setCaptions(safeCaptions);
+      } catch (error) {
+      setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
+      }
     
   };
 
@@ -105,10 +110,10 @@ function App() {
             <input
               type="file"
               accept="image/*"
+              name="image"
               onChange={handleImageChange}
               className="hidden"
               ref={inputRef}
-              required
             />
           </label>
           {image && (
