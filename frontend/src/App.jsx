@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 // import axios from "axios"; // Commented out for now
 
 function App() {
@@ -8,9 +8,22 @@ function App() {
   const [captions, setCaptions] = useState([]);
   const [details, setDetails] = useState("");
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const inputRef = useRef();
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setImage(file);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   const handleCopy = (fullText, index) => {
@@ -54,9 +67,23 @@ function App() {
       >
         <div>
           <label className="block mb-2 font-medium">Upload an image:</label>
-          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition">
-            <svg className="w-10 h-10 mb-2 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4-4m0 0l-4 4m4-4v12" />
+          <label
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition"
+          >
+            <svg
+              className="w-10 h-10 mb-2 text-gray-400 transition-transform duration-300 transform hover:scale-110"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4-4m0 0l-4 4m4-4v12"
+              />
             </svg>
             <span className="text-gray-500">Click to upload or drag & drop</span>
             <input
@@ -64,9 +91,19 @@ function App() {
               accept="image/*"
               onChange={handleImageChange}
               className="hidden"
+              ref={inputRef}
               required
             />
           </label>
+          {image && (
+            <div className="mt-4">
+              <img
+                src={URL.createObjectURL(image)}
+                alt="Preview"
+                className="w-full rounded-lg shadow-md"
+              />
+            </div>
+          )}
         </div>
 
         <div>
@@ -151,6 +188,23 @@ function App() {
           ))}
         </div>
       )}
+
+      <footer className="mt-12 max-w-2xl text-center text-sm text-gray-500 px-6">
+        <h3 className="text-base font-semibold mb-2 text-gray-700">About Caption It!</h3>
+        <p className="mb-2">
+          Caption It! helps you turn your photos into scroll-stopping social media posts using AI.
+          Choose your style, language, and give it a little context — we’ll do the rest.
+        </p>
+        <p className="mb-2">
+          <strong>Privacy first:</strong> Your uploaded photo is never stored or saved. It is processed temporarily to generate the captions.
+        </p>
+        <p className="mb-2 italic">
+          ⚠️ AI isn't perfect — always review the captions before posting. Some outputs may be inaccurate or unexpected.
+        </p>
+        <p>
+          Built with ❤️ using FastAPI, Vite, and Tailwind. Enjoy and tag us when you share your AI captions!
+        </p>
+      </footer>
     </div>
   );
 }
