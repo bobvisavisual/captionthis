@@ -21,8 +21,8 @@ app.add_middleware(
 )
 
 # Use OpenRouter API
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=OPENROUTER_API_KEY)
+API_KEY = os.getenv("OPENROUTER_API_KEY")
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 @app.post("/generate")
 async def generate_caption(
