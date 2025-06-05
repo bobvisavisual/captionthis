@@ -49,11 +49,18 @@ function App() {
     formData.append("details", details);
 
     try {
-      const response = await axios.post("https://captionthis.onrender.com/generate", formData);
-      setCaptions(response.data.captions || []);
-    } catch (error) {
-      setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
-    }
+  const response = await axios.post("https://captionthis.onrender.com/generate", formData);
+  const result = response.data.captions;
+
+  // Normalize in case it's an array of strings
+  const safeCaptions = result.map((c) =>
+    typeof c === "string" ? { caption: c, hashtags: "" } : c
+  );
+
+  setCaptions(safeCaptions);
+} catch (error) {
+  setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
+}
     
   };
 
