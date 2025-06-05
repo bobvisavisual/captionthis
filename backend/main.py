@@ -70,43 +70,26 @@ async def generate_caption(
         
         import re
 
-        # Clean and filter lines
-        lines = [line.strip() for line in full_text.split("\n") if line.strip()]
+        # Use regex to extract numbered captions
+        pattern = r"(?:\\n|^)(\\d\\.)\\s*(.*?)\\s*(#[^\\n]+(?:\\n?#.*)*)"
 
-        # Skip intro if detected
-        if lines and any(keyword in lines[0].lower() for keyword in ["here are", "caption", "social media"]):
-            lines = lines[1:]
-
+        matches = re.findall(pattern, full_text, re.DOTALL)
         grouped = []
-        i = 0
 
-        while i < len(lines):
-            caption_line = lines[i]
+        for match in matches:
+            caption_text = match[1].strip().strip('"')
+            hashtags_text = match[2].replace('\n', ' ').strip()
+            grouped.append({
+                "caption": caption_text,
+                "hashtags": hashtags_text
+            })
 
-            # Check if it's a numbered or markdown-styled caption
-            if re.match(r"^(\\d+\\.|\\*\\*Caption \\d+:\\*\\*)", caption_line):
-                i += 1
-                caption = lines[i] if i < len(lines) else caption_line
-                i += 1
-                hashtags = []
-
-                while i < len(lines) and not re.match(r"^(\\d+\\.|\\*\\*Caption \\d+:\\*\\*)", lines[i]):
-                    hashtags.append(lines[i])
-                    i += 1
-
-                grouped.append({
-                    "caption": caption.strip('\"'),
-                    "hashtags": ' '.join(hashtags).strip()
-                })
-            else:
-                i += 1  # Skip non-caption lines
-
-        # Safety fallback
+        # Fallback if nothing is matched
         if not grouped:
             grouped.append({
                 "caption": full_text.strip(),
                 "hashtags": ""
-        })
+            })
 
         return JSONResponse(content={"captions": grouped})
 
