@@ -1,17 +1,14 @@
 # backend/main.py
 
-import os
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from openai import OpenAI
-from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
+import requests
 import base64
-
-load_dotenv()
+import os
 
 app = FastAPI()
 
-# Allow frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,41 +17,49 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Use OpenRouter API
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 @app.post("/generate")
 async def generate_caption(
     image: UploadFile = File(...),
-    type: str = Form("funny"),
-    language: str = Form("en"),
-    details: str = Form("")
+    type: str = Form(...),
+    language: str = Form(...),
+    context: str = Form("")  # Optional user-provided detail
 ):
-    # Read and encode image
-    image_bytes = await image.read()
-    base64_image = base64.b64encode(image_bytes).decode("utf-8")
-
-    # Prompt for Gemini (tuned for captioning with user-provided style and language)
-    prompt = f"Generate a {type} social media caption in {language.upper()} for the image. {details if details else ''}"
-
     try:
-        response = client.chat.completions.create(
-            model="google/gemini-2.0-flash-001",
-            messages=[
-                {"role": "system", "content": "You are a creative caption generator for social media images."},
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                    ]
-                }
-            ]
-        )
+        image_data = await image.read()
+        base64_image = base64.b64encode(image_data).decode("utf-8")
 
-        caption = response.choices[0].message.content.strip()
-        return {"caption": caption}
+        lang_map = {"en": "English", "ms": "Malay"}
+        lang = lang_map.get(language, "English")
+
+        base_prompt = f"Generate a {type} caption in {lang} for the given image."
+        if context:
+            base_prompt += f" Additional details: {context}"
+
+        headers = {
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        # Generate 3 captions
+        captions = []
+        for _ in range(3):
+            payload = {
+                "model": "google/gemini-2.0-flash-001",
+                "messages": [
+                    {"role": "system", "content": "You are a caption generator."},
+                    {"role": "user", "content": base_prompt}
+                ],
+                "max_tokens": 80
+            }
+            response = requests.post(API_URL, json=payload, headers=headers)
+            data = response.json()
+            caption = data["choices"][0]["message"]["content"].strip()
+            captions.append(caption)
+
+        return JSONResponse(content={"captions": captions})
 
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(content={"error": str(e)}, status_code=500)
