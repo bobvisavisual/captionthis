@@ -61,7 +61,7 @@ function App() {
 					onClick={() => setCaptionType(style)}
 					className={`px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
 						${captionType === style ? 'bg-blue-700' : style === 'random' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-500 hover:bg-blue-600'}
-						${index === 5 ? 'col-span-3 text-center' : ''}`}
+						${index === 6 ? 'col-span-3 text-center' : ''}`}
 					>
 					{style.charAt(0).toUpperCase() + style.slice(1)}
 				</button>
