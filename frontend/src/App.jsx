@@ -54,7 +54,7 @@ function App() {
         <div>
 			<label className="block mb-2 font-medium">Choose caption style:</label>
 			<div className="grid grid-cols-3 gap-3 mb-6">
-			{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'professional', 'random'].map((style, index) => (
+			{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'executive', 'random'].map((style, index) => (
 				<button
 					key={style}
 					type="button"
