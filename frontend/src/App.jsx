@@ -1,111 +1,119 @@
 // frontend/src/App.jsx
+import { useState } from 'react';
+import './App.css';
 
-import { useState } from "react";
+const captionStyles = ['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'];
+const languages = [
+  { label: 'English', code: 'en' },
+  { label: 'Malay', code: 'ms' }
+];
 
-export default function App() {
+function App() {
   const [image, setImage] = useState(null);
-  const [style, setStyle] = useState("funny");
-  const [language, setLanguage] = useState("en");
-  const [context, setContext] = useState("");
+  const [style, setStyle] = useState('funny');
+  const [language, setLanguage] = useState('en');
   const [captions, setCaptions] = useState([]);
+  const [extraDetails, setExtraDetails] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+    setCaptions([]);
+  };
+
+  const generateCaptions = async () => {
     if (!image) return;
-
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("type", style);
-    formData.append("language", language);
-    formData.append("context", context);
-
     setLoading(true);
     setCaptions([]);
 
-    const res = await fetch("https://captionthis.onrender.com/generate", {
-      method: "POST",
-      body: formData,
-    });
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('type', style);
+    formData.append('language', language);
+    formData.append('details', extraDetails);
 
-    const data = await res.json();
-    setCaptions(data.captions || [`Error: ${data.error}`]);
+    try {
+      const response = await fetch('https://your-backend-url.com/generate', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      setCaptions(data.captions || ['No captions generated.']);
+    } catch (err) {
+      setCaptions(['Error generating captions.']);
+    }
+
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center p-6">
-      <h1 className="text-4xl font-bold mb-2">Caption It!</h1>
-      <p className="text-gray-600 mb-6">Instant captions for your moments ✨</p>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
+      <h1 className="text-4xl font-bold text-gray-800 mb-2">Caption It!</h1>
+      <p className="text-lg text-gray-500 mb-6">Turn any photo into scroll-stopping captions</p>
 
+      <h2 className="text-xl font-semibold text-gray-700 mb-2">Upload Image</h2>
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => setImage(e.target.files[0])}
-        className="mb-4"
+        onChange={handleImageChange}
+        className="mb-6"
       />
 
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {["funny", "inspiring", "emotional", "witty", "romantic"].map((s) => (
+      <h2 className="text-xl font-semibold text-gray-700 mb-2">Caption Style</h2>
+      <div className="grid grid-cols-3 gap-2 mb-6">
+        {captionStyles.map((s) => (
           <button
             key={s}
-            className={`py-2 px-4 rounded ${
-              style === s ? "bg-black text-white" : "bg-gray-200"
-            }`}
             onClick={() => setStyle(s)}
+            className={`px-4 py-2 rounded font-medium ${
+              s === style ? 'bg-blue-600 text-white' : s === 'random' ? 'bg-yellow-300 text-black' : 'bg-white text-gray-700 border'
+            }`}
           >
             {s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
         ))}
-        <button
-          className={`py-2 px-4 rounded col-span-1 ${
-            style === "random" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setStyle("random")}
-        >
-          Random
-        </button>
       </div>
 
-      <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value)}
-        className="mb-4 p-2 border rounded"
-      >
-        <option value="en">English</option>
-        <option value="ms">Malay</option>
-      </select>
+      <h2 className="text-xl font-semibold text-gray-700 mb-2">Language</h2>
+      <div className="mb-6">
+        {languages.map((lang) => (
+          <button
+            key={lang.code}
+            onClick={() => setLanguage(lang.code)}
+            className={`px-4 py-2 mx-1 rounded font-medium ${
+              lang.code === language ? 'bg-green-600 text-white' : 'bg-white text-gray-700 border'
+            }`}
+          >
+            {lang.label}
+          </button>
+        ))}
+      </div>
 
+      <h2 className="text-xl font-semibold text-gray-700 mb-2">Additional Info</h2>
       <textarea
-        placeholder="Add any extra details (optional)"
-        value={context}
-        onChange={(e) => setContext(e.target.value)}
-        className="w-full max-w-md p-2 mb-4 border rounded"
-        rows={2}
-      />
+        placeholder="Add extra details about the photo (optional)"
+        value={extraDetails}
+        onChange={(e) => setExtraDetails(e.target.value)}
+        className="w-full max-w-md p-2 border border-gray-300 rounded mb-6"
+        rows={3}
+      ></textarea>
 
       <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="bg-black text-white px-6 py-2 rounded mb-6"
+        onClick={generateCaptions}
+        className="bg-indigo-600 text-white px-6 py-2 rounded shadow-md hover:bg-indigo-700 mb-6"
       >
-        {loading ? "Generating..." : "Generate Caption"}
+        {loading ? 'Generating...' : 'Generate Captions'}
       </button>
 
-      {captions.length > 0 && (
-        <div className="w-full max-w-md space-y-4">
-          {captions.map((caption, i) => (
-            <div key={i} className="bg-gray-100 p-4 rounded">
-              <p>{caption}</p>
-              <button
-                className="mt-2 text-sm text-blue-500"
-                onClick={() => navigator.clipboard.writeText(caption)}
-              >
-                Copy
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="space-y-4 w-full max-w-xl">
+        {captions.map((caption, index) => (
+          <div key={index} className="bg-white p-4 rounded shadow">
+            <p className="text-gray-800">{caption}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
+
+export default App;
