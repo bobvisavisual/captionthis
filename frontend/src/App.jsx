@@ -203,15 +203,17 @@ function App() {
         <div className="mt-8 max-w-xl text-center space-y-4">
           <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
           {captions.map((cap, idx) => (
-            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left relative animate-fade-in-up">
+            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
               <p className="text-lg font-medium mb-1">{cap.caption}</p>
-              <p className="text-sm text-gray-500 mb-2">{cap.hashtags}</p>
-              <button
-                onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
-                className="absolute top-2 right-2 text-sm text-blue-600 hover:underline"
-              >
-                {copiedIndex === idx ? "Copied!" : "📋 Copy"}
-              </button>
+              <p className="text-lg text-gray-600 mb-3">{cap.hashtags}</p>
+              <div className="text-right">
+                <button
+                  onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  {copiedIndex === idx ? "Copied!" : "📋 Copy"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
