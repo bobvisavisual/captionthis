@@ -34,6 +34,7 @@ function App() {
   return (
     <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center justify-center px-4 py-8">
       <h1 className="text-4xl md:text-6xl font-bold mb-8 text-center">Caption It!</h1>
+	  <h2 className="text-1xl md:text-2xl font-bold mb-8 text-center">Caption This</h2>
 
       <form
         onSubmit={handleSubmit}
@@ -53,23 +54,23 @@ function App() {
         <div>
 			<label className="block mb-2 font-medium">Choose caption style:</label>
 			<div className="grid grid-cols-3 gap-2 mt-4">
-				{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'].map((style) => (
-				<button
-					key={style}
-					type="button"
-					className={`py-2 px-4 rounded-lg text-white font-semibold transition-colors ${
-					selectedStyle === style
-						? 'bg-blue-600'
-						: style === 'random'
-						? 'bg-purple-500 hover:bg-purple-600'
-						: 'bg-gray-500 hover:bg-gray-600'
-					}`}
-					onClick={() => setSelectedStyle(style)}
-				>
-				{style.charAt(0).toUpperCase() + style.slice(1)}
-				</button>
-				))}
-			</div>
+  {['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'].map((style) => (
+    <button
+      key={style}
+      type="button"
+      className={`py-2 px-4 rounded-lg text-white font-semibold transition-colors ${
+        selectedStyle === style
+          ? 'bg-blue-600'
+          : style === 'random'
+          ? 'bg-purple-500 hover:bg-purple-600'
+          : 'bg-gray-500 hover:bg-gray-600'
+      }`}
+      onClick={() => setSelectedStyle(style)}
+    >
+      {style.charAt(0).toUpperCase() + style.slice(1)}
+    </button>
+  ))}
+</div>
 
         </div>
 
