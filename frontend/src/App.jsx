@@ -7,20 +7,27 @@ function App() {
   const [language, setLanguage] = useState("en");
   const [captions, setCaptions] = useState([]);
   const [details, setDetails] = useState("");
+  const [copiedIndex, setCopiedIndex] = useState(null);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
 
+  const handleCopy = (fullText, index) => {
+    navigator.clipboard.writeText(fullText).then(() => {
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 1500);
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate caption response for styling demo
     setCaptions([
-      "This is a sample caption to preview styling.",
-      "Another creative take for your image.",
-      "A third witty caption just in case!"
+      { caption: "A day well spent with loved ones.", hashtags: "#familytime #memories" },
+      { caption: "Laughter is the best kind of therapy.", hashtags: "#happyvibes #goodtimes" },
+      { caption: "Chillin’ with my favorite humans.", hashtags: "#weekendfun #squadgoals" }
     ]);
-    /* Uncomment and use this when Axios is ready
+    /* Uncomment when Axios is ready
     const formData = new FormData();
     formData.append("image", image);
     formData.append("type", captionType);
@@ -31,7 +38,7 @@ function App() {
       const response = await axios.post("https://captionthis.onrender.com/generate", formData);
       setCaptions(response.data.captions || []);
     } catch (error) {
-      setCaptions(["API Error: " + error.message]);
+      setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
     }
     */
   };
@@ -123,9 +130,18 @@ function App() {
 
       {captions.length > 0 && (
         <div className="mt-8 max-w-xl text-center space-y-4">
-          <h2 className="text-xl font-bold mb-2">Generated Captions:</h2>
+          <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
           {captions.map((cap, idx) => (
-            <p key={idx} className="bg-white border rounded-xl p-4 shadow text-lg">{cap}</p>
+            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left relative">
+              <p className="text-lg font-medium mb-1">{cap.caption}</p>
+              <p className="text-sm text-gray-500 mb-2">{cap.hashtags}</p>
+              <button
+                onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
+                className="absolute top-2 right-2 text-sm text-blue-600 hover:underline"
+              >
+                {copiedIndex === idx ? "Copied!" : "📋 Copy"}
+              </button>
+            </div>
           ))}
         </div>
       )}

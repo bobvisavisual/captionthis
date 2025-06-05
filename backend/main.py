@@ -33,7 +33,8 @@ async def generate_caption(
         lang = lang_map.get(language, "English")
 
         prompt = (
-            f"<image>\nGenerate 3 {type.lower()} social media captions in {lang} for the photo above."
+            f"<image>\nGenerate 3 {type.lower()} social media captions in {lang} for the photo above. "
+            f"Each caption should be followed by 2–3 relevant hashtags."
         )
         if details:
             prompt += f" Additional context: {details.strip()}"
@@ -49,7 +50,7 @@ async def generate_caption(
                     ]
                 }
             ],
-            "max_tokens": 300
+            "max_tokens": 400
         }
 
         headers = {
@@ -67,11 +68,15 @@ async def generate_caption(
 
         full_text = data["choices"][0]["message"]["content"].strip()
 
-        # Try to split into 3 lines or parts
-        parts = [line.strip("-\u2022. ") for line in full_text.split("\n") if line.strip()]
-        captions = parts[:3] if len(parts) >= 3 else [full_text]
+        # Attempt to split captions and hashtags
+        blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
+        grouped = []
+        for i in range(0, len(blocks), 2):
+            caption = blocks[i]
+            hashtags = blocks[i+1] if i + 1 < len(blocks) else ""
+            grouped.append({"caption": caption, "hashtags": hashtags})
 
-        return JSONResponse(content={"captions": captions})
+        return JSONResponse(content={"captions": grouped})
 
     except Exception as e:
         return JSONResponse(content={"captions": [f"Error: {str(e)}"]}, status_code=500)
