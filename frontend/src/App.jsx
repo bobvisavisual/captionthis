@@ -210,10 +210,9 @@ function App() {
         </div>
       )}
 
-      <footer className="mt-12 max-w-2xl text-center text-sm text-gray-500 px-6">
-        <h3 className="text-base font-semibold mb-2 text-gray-700 dark:text-white">About Caption It!</h3>
+      <footer className="mt-12 max-w-xl text-center text-sm text-gray-500 px-6">
         <p className="mb-2">
-          Caption It! helps you turn your photos into scroll-stopping social media posts using AI.
+          <strong>Caption It!</strong> helps you turn your photos into scroll-stopping social media posts using AI.
           Choose your style, language, and give it a little context — we’ll do the rest.
         </p>
         <p className="mb-2">
