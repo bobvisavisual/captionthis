@@ -70,38 +70,35 @@ async def generate_caption(
         
         import re
 
-        # Remove any intro before "1."
-        intro_index = re.search(r"\n?1\.", full_text)
-        if intro_index:
-            full_text = full_text[intro_index.start():]
+        # Trim intro text before first caption
+        caption_start = re.search(r"(?=\\*\\*?Caption\\s*1\\*\\*?:?)", full_text, re.IGNORECASE)
+        if caption_start:
+            full_text = full_text[caption_start.start():]
 
-        # Split on numbered points
-        raw_blocks = re.split(r"(?=\n?\d+\.\s)", full_text)
+        # Split on "**Caption X:**" format
+        blocks = re.split(r"\\*\\*?Caption\\s*\\d\\*\\*?:?", full_text)
+        blocks = [block.strip() for block in blocks if block.strip()]
 
         grouped = []
-        for block in raw_blocks:
-            lines = block.strip().split("\n")
-            text = " ".join(lines)
-            if "#" in text:
-                parts = text.rsplit("#", 1)
-                caption_part = parts[0].strip().strip("0123456789.:- ")
-                hashtags_part = "#" + parts[1].strip()
-            else:
-                caption_part = text.strip("0123456789.:- ")
-                hashtags_part = ""
+        for block in blocks:
+            lines = block.splitlines()
+            caption_lines = []
+            hashtags = []
 
-            if caption_part:
-                grouped.append({
-                    "caption": caption_part,
-                    "hashtags": hashtags_part
-                })
+            for line in lines:
+                if "#" in line:
+                    hashtags.append(line.strip())
+                else:
+                    caption_lines.append(line.strip())
 
-        # Fallback if nothing parsed
-        if not grouped:
             grouped.append({
-                "caption": full_text.strip(),
-                "hashtags": ""
+                "caption": " ".join(caption_lines).strip(),
+                "hashtags": " ".join(hashtags).strip()
             })
+
+        # Fallback if none grouped
+        if not grouped:
+            grouped = [{"caption": full_text.strip(), "hashtags": ""}]
 
         return JSONResponse(content={"captions": grouped})
 
