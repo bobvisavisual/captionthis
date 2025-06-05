@@ -51,23 +51,21 @@ function App() {
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">Choose caption style:</label>
-          <div className="flex gap-4">
-            {['funny', 'inspiring', 'random'].map((style) => (
-              <button
-                type="button"
-                key={style}
-                onClick={() => setCaptionType(style)}
-                className={`px-4 py-2 rounded-xl font-semibold border transition ${
-                  captionType === style
-                    ? 'bg-black text-white border-black'
-                    : 'bg-white text-black border-gray-400'
-                }`}
-              >
-                {style.charAt(0).toUpperCase() + style.slice(1)}
-              </button>
-            ))}
-          </div>
+			<label className="block mb-2 font-medium">Choose caption style:</label>
+			<div className="grid grid-cols-3 gap-3 mb-6">
+			{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'].map((style, index) => (
+				<button
+					key={style}
+					type="button"
+					onClick={() => setCaptionType(style)}
+					className={`px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
+						${captionType === style ? 'bg-blue-700' : style === 'random' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-500 hover:bg-blue-600'}
+						${index === 5 ? 'col-span-3 text-center' : ''}`}
+					>
+					{style.charAt(0).toUpperCase() + style.slice(1)}
+				</button>
+			))}
+			</div>
         </div>
 
         <div>
