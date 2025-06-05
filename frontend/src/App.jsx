@@ -10,6 +10,7 @@ function App() {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const inputRef = useRef();
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -40,34 +41,32 @@ function App() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  if (!image) {
+    alert("Please upload an image first.");
+    return;
+  }
 
-    if (!image) {
-      alert("Please upload an image first.");
-      return;
-    }
-    
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("type", captionType);
-    formData.append("language", language);
-    formData.append("details", details);
+  setLoading(true); // show spinner
+  const formData = new FormData();
+  formData.append("image", image);
+  formData.append("type", captionType);
+  formData.append("language", language);
+  formData.append("details", details);
 
-    try {
-      const response = await axios.post("https://captionthis.onrender.com/generate", formData);
-      const result = response.data.captions;
-
-      // Normalize in case it's an array of strings
-      const safeCaptions = result.map((c) =>
-        typeof c === "string" ? { caption: c, hashtags: "" } : c
-      );
-
-      setCaptions(safeCaptions);
-      } catch (error) {
-      setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
-      }
-    
-  };
+  try {
+    const response = await axios.post("https://captionthis.onrender.com/generate", formData);
+    const result = response.data.captions;
+    const safeCaptions = result.map((c) =>
+      typeof c === "string" ? { caption: c, hashtags: "" } : c
+    );
+    setCaptions(safeCaptions);
+  } catch (error) {
+    setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
+  } finally {
+    setLoading(false); // hide spinner
+  }
+};
 
   return (
     <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"} min-h-screen flex flex-col items-center justify-center px-4 py-8 transition-colors duration-500`}>
@@ -198,6 +197,12 @@ function App() {
           Generate Captions
         </button>
       </form>
+
+      {loading && (
+        <div className="mt-8 text-center text-lg font-medium animate-pulse">
+          Generating captions...
+        </div>
+      )}
 
       {captions.length > 0 && (
         <div className="mt-8 max-w-xl text-center space-y-4">
