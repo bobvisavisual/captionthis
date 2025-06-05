@@ -1,74 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+// import axios from "axios"; // Commented out for now
 
-const App = () => {
+function App() {
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
   const [captionType, setCaptionType] = useState("funny");
   const [language, setLanguage] = useState("en");
   const [caption, setCaption] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
   };
 
-  const handleGenerateCaption = async () => {
-    if (!image) return;
-    setLoading(true);
-    setCaption("");
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Simulate caption response for styling demo
+    setCaption("This is a sample caption to preview styling.");
+    // Uncomment and use the code below when Axios is ready
+    /*
     const formData = new FormData();
     formData.append("image", image);
     formData.append("type", captionType);
     formData.append("language", language);
 
     try {
-      const res = await fetch("https://captionthis.onrender.com/generate", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      setCaption(data.caption);
+      const response = await axios.post("https://your-api-url.com/generate", formData);
+      setCaption(response.data.caption);
     } catch (error) {
-      setCaption("Failed to generate caption.");
-    } finally {
-      setLoading(false);
+      setCaption("API Error: " + error.message);
     }
+    */
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "500px", margin: "auto" }}>
-      <h2>AI Caption Generator</h2>
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
-      {preview && <img src={preview} alt="Preview" style={{ width: "100%", marginTop: "1rem" }} />}
-      <select value={captionType} onChange={(e) => setCaptionType(e.target.value)} style={{ width: "100%", marginTop: "1rem" }}>
-        <option value="funny">Funny</option>
-        <option value="romantic">Romantic</option>
-        <option value="poetic">Poetic</option>
-        <option value="sarcastic">Sarcastic</option>
-        <option value="inspirational">Inspirational</option>
-      </select>
-      <select value={language} onChange={(e) => setLanguage(e.target.value)} style={{ width: "100%", marginTop: "0.5rem" }}>
-        <option value="en">English</option>
-        <option value="ms">Malay</option>
-      </select>
-      <button onClick={handleGenerateCaption} disabled={loading} style={{ width: "100%", marginTop: "1rem" }}>
-        {loading ? "Generating..." : "Generate Caption"}
-      </button>
+    <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center justify-center px-4 py-8">
+      <h1 className="text-4xl md:text-6xl font-bold mb-8 text-center">Caption This</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-gray-100 p-6 rounded-2xl shadow-md space-y-6"
+      >
+        <div>
+          <label className="block mb-2 font-medium">Upload an image:</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">Choose caption style:</label>
+          <div className="flex gap-4">
+            {['funny', 'inspiring', 'random'].map((style) => (
+              <button
+                type="button"
+                key={style}
+                onClick={() => setCaptionType(style)}
+                className={`px-4 py-2 rounded-xl font-semibold border transition ${
+                  captionType === style
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black border-gray-400'
+                }`}
+              >
+                {style.charAt(0).toUpperCase() + style.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">Language:</label>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`px-4 py-2 rounded-xl font-semibold border transition ${
+                language === "en"
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-black border-gray-400'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("ms")}
+              className={`px-4 py-2 rounded-xl font-semibold border transition ${
+                language === "ms"
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-black border-gray-400'
+              }`}
+            >
+              Malay
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-900 transition"
+        >
+          Generate Caption
+        </button>
+      </form>
+
       {caption && (
-        <div style={{ marginTop: "1rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
-          <p>{caption}</p>
-          <button onClick={() => navigator.clipboard.writeText(caption)} style={{ marginTop: "0.5rem" }}>
-            Copy Caption
-          </button>
+        <div className="mt-8 max-w-xl text-center p-4 border rounded-xl shadow">
+          <h2 className="text-xl font-bold mb-2">Generated Caption:</h2>
+          <p className="text-lg">{caption}</p>
         </div>
       )}
     </div>
   );
-};
+}
 
 export default App;
