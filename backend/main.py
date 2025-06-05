@@ -69,32 +69,44 @@ async def generate_caption(
         full_text = data["choices"][0]["message"]["content"].strip()
         
         import re
-        
-        # Remove intro if detected
-        blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
-        if blocks and ("caption" in blocks[0].lower() or "here are" in blocks[0].lower()):
-            blocks = blocks[1:]
+
+        # Clean and filter lines
+        lines = [line.strip() for line in full_text.split("\n") if line.strip()]
+
+        # Skip intro if detected
+        if lines and any(keyword in lines[0].lower() for keyword in ["here are", "caption", "social media"]):
+            lines = lines[1:]
 
         grouped = []
         i = 0
 
-        while i < len(blocks):
-            # Match numbered caption (e.g., '1.', '2.', etc.)
-            if re.match(r"^\\d+\\.", blocks[i]):
-                caption = blocks[i]
+        while i < len(lines):
+            caption_line = lines[i]
+
+            # Check if it's a numbered or markdown-styled caption
+            if re.match(r"^(\\d+\\.|\\*\\*Caption \\d+:\\*\\*)", caption_line):
+                i += 1
+                caption = lines[i] if i < len(lines) else caption_line
                 i += 1
                 hashtags = []
 
-                while i < len(blocks) and not re.match(r"^\\d+\\.", blocks[i]):
-                    hashtags.append(blocks[i])
+                while i < len(lines) and not re.match(r"^(\\d+\\.|\\*\\*Caption \\d+:\\*\\*)", lines[i]):
+                    hashtags.append(lines[i])
                     i += 1
 
                 grouped.append({
-                    "caption": caption,
-                    "hashtags": ' '.join(hashtags)
+                    "caption": caption.strip('\"'),
+                    "hashtags": ' '.join(hashtags).strip()
                 })
             else:
-                i += 1  # Skip anything unexpected
+                i += 1  # Skip non-caption lines
+
+        # Safety fallback
+        if not grouped:
+            grouped.append({
+                "caption": full_text.strip(),
+                "hashtags": ""
+        })
 
         return JSONResponse(content={"captions": grouped})
 
