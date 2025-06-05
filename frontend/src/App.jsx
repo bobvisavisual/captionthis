@@ -8,6 +8,7 @@ function App() {
   const [captions, setCaptions] = useState([]);
   const [details, setDetails] = useState("");
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
   const inputRef = useRef();
 
   const handleImageChange = (e) => {
@@ -31,6 +32,11 @@ function App() {
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 1500);
     });
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    inputRef.current.value = null;
   };
 
   const handleSubmit = async (e) => {
@@ -57,20 +63,29 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center justify-center px-4 py-8">
-      <h1 className="text-4xl md:text-6xl font-bold mb-1 text-center">Caption It!</h1>
-      <h2 className="text-sm md:text-1xl font-semibold mb-8 text-black-50 uppercase text-center">Stop guessing. Start captioning.</h2>
+    <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"} min-h-screen flex flex-col items-center justify-center px-4 py-8 transition-colors duration-500`}>
+      <div className="w-full max-w-3xl flex justify-between items-center mb-6">
+        <h1 className="text-4xl md:text-6xl font-bold text-center flex-1">Caption It!</h1>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="ml-4 px-4 py-2 rounded-md border text-sm font-medium transition hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          {darkMode ? "🌞 Light" : "🌙 Dark"}
+        </button>
+      </div>
+
+      <h2 className="text-sm md:text-1xl font-semibold mb-8 uppercase text-center opacity-70">Stop guessing. Start captioning.</h2>
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-gray-100 p-6 rounded-2xl shadow-md space-y-6"
+        className={`w-full max-w-md ${darkMode ? "bg-gray-800" : "bg-gray-100"} p-6 rounded-2xl shadow-md space-y-6 transition-colors duration-500`}
       >
         <div>
           <label className="block mb-2 font-medium">Upload an image:</label>
           <label
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition"
+            className={`flex flex-col items-center justify-center w-full border-2 border-dashed ${darkMode ? "border-gray-600 hover:border-blue-400" : "border-gray-300 hover:border-blue-500"} rounded-xl p-6 text-center cursor-pointer transition`}
           >
             <svg
               className="w-10 h-10 mb-2 text-gray-400 transition-transform duration-300 transform hover:scale-110"
@@ -96,12 +111,19 @@ function App() {
             />
           </label>
           {image && (
-            <div className="mt-4">
+            <div className="mt-4 relative">
               <img
                 src={URL.createObjectURL(image)}
                 alt="Preview"
                 className="w-full rounded-lg shadow-md"
               />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+              >
+                Remove
+              </button>
             </div>
           )}
         </div>
@@ -175,7 +197,7 @@ function App() {
         <div className="mt-8 max-w-xl text-center space-y-4">
           <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
           {captions.map((cap, idx) => (
-            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left relative">
+            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left relative animate-fade-in-up">
               <p className="text-lg font-medium mb-1">{cap.caption}</p>
               <p className="text-sm text-gray-500 mb-2">{cap.hashtags}</p>
               <button
@@ -190,7 +212,7 @@ function App() {
       )}
 
       <footer className="mt-12 max-w-2xl text-center text-sm text-gray-500 px-6">
-        <h3 className="text-base font-semibold mb-2 text-gray-700">About Caption It!</h3>
+        <h3 className="text-base font-semibold mb-2 text-gray-700 dark:text-white">About Caption It!</h3>
         <p className="mb-2">
           Caption It! helps you turn your photos into scroll-stopping social media posts using AI.
           Choose your style, language, and give it a little context — we’ll do the rest.
@@ -205,6 +227,16 @@ function App() {
           Built with ❤️ using FastAPI, Vite, and Tailwind. Enjoy and tag us when you share your AI captions!
         </p>
       </footer>
+
+      <style>
+        {`@keyframes fade-in-up {
+          0% { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out;
+        }`}
+      </style>
     </div>
   );
 }
