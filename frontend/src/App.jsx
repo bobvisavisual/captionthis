@@ -1,117 +1,116 @@
-// frontend/src/App.jsx
-import { useState } from 'react';
-// import './App.css';
-
-const captionStyles = ['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'];
-const languages = [
-  { label: 'English', code: 'en' },
-  { label: 'Malay', code: 'ms' }
-];
+import React, { useState } from "react";
+// import axios from "axios"; // Commented out for now
 
 function App() {
   const [image, setImage] = useState(null);
-  const [style, setStyle] = useState('funny');
-  const [language, setLanguage] = useState('en');
-  const [captions, setCaptions] = useState([]);
-  const [extraDetails, setExtraDetails] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [captionType, setCaptionType] = useState("funny");
+  const [language, setLanguage] = useState("en");
+  const [caption, setCaption] = useState("");
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
-    setCaptions([]);
   };
 
-  const generateCaptions = async () => {
-    if (!image) return;
-    setLoading(true);
-    setCaptions([]);
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Simulate caption response for styling demo
+    setCaption("This is a sample caption to preview styling.");
+    // Uncomment and use the code below when Axios is ready
+    /*
     const formData = new FormData();
-    formData.append('image', image);
-    formData.append('type', style);
-    formData.append('language', language);
-    formData.append('details', extraDetails);
+    formData.append("image", image);
+    formData.append("type", captionType);
+    formData.append("language", language);
 
     try {
-      const response = await fetch('https://captionthis.onrender.com/generate', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      setCaptions(data.captions || ['No captions generated.']);
-    } catch (err) {
-      setCaptions(['Error generating captions.']);
+      const response = await axios.post("https://captionthis.onrender.com/generate", formData);
+      setCaption(response.data.caption);
+    } catch (error) {
+      setCaption("API Error: " + error.message);
     }
-
-    setLoading(false);
+    */
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <h1 className="text-4xl font-bold text-gray-800 mb-2">Caption It!</h1>
-      <p className="text-lg text-gray-500 mb-6">Turn any photo into scroll-stopping captions</p>
+    <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center justify-center px-4 py-8">
+      <h1 className="text-4xl md:text-6xl font-bold mb-1 text-center">Caption It!</h1>
+	  <h2 className="text-sm md:text-1xl font-semibold mb-8 text-black-50 uppercase text-center">Stop guessing. Start captioning.</h2>
 
-      <h2 className="text-xl font-semibold text-gray-700 mb-2">Upload Image</h2>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="mb-6"
-      />
-
-      <h2 className="text-xl font-semibold text-gray-700 mb-2">Caption Style</h2>
-      <div className="grid grid-cols-3 gap-2 mb-6">
-        {captionStyles.map((s) => (
-          <button
-            key={s}
-            onClick={() => setStyle(s)}
-            className={`px-4 py-2 rounded font-medium ${
-              s === style ? 'bg-blue-600 text-white' : s === 'random' ? 'bg-yellow-300 text-black' : 'bg-white text-gray-700 border'
-            }`}
-          >
-            {s.charAt(0).toUpperCase() + s.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      <h2 className="text-xl font-semibold text-gray-700 mb-2">Language</h2>
-      <div className="mb-6">
-        {languages.map((lang) => (
-          <button
-            key={lang.code}
-            onClick={() => setLanguage(lang.code)}
-            className={`px-4 py-2 mx-1 rounded font-medium ${
-              lang.code === language ? 'bg-green-600 text-white' : 'bg-white text-gray-700 border'
-            }`}
-          >
-            {lang.label}
-          </button>
-        ))}
-      </div>
-
-      <h2 className="text-xl font-semibold text-gray-700 mb-2">Additional Info</h2>
-      <textarea
-        placeholder="Add extra details about the photo (optional)"
-        value={extraDetails}
-        onChange={(e) => setExtraDetails(e.target.value)}
-        className="w-full max-w-md p-2 border border-gray-300 rounded mb-6"
-        rows={3}
-      ></textarea>
-
-      <button
-        onClick={generateCaptions}
-        className="bg-indigo-600 text-white px-6 py-2 rounded shadow-md hover:bg-indigo-700 mb-6"
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-gray-100 p-6 rounded-2xl shadow-md space-y-6"
       >
-        {loading ? 'Generating...' : 'Generate Captions'}
-      </button>
+        <div>
+          <label className="block mb-2 font-medium">Upload an image:</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full"
+            required
+          />
+        </div>
 
-      <div className="space-y-4 w-full max-w-xl">
-        {captions.map((caption, index) => (
-          <div key={index} className="bg-white p-4 rounded shadow">
-            <p className="text-gray-800">{caption}</p>
+        <div>
+			<label className="block mb-2 font-medium">Choose caption style:</label>
+			<div className="grid grid-cols-3 gap-3 mb-6">
+			{['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'executive', 'random'].map((style, index) => (
+				<button
+					key={style}
+					type="button"
+					onClick={() => setCaptionType(style)}
+					className={`px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
+						${captionType === style ? 'bg-blue-700' : style === 'random' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-500 hover:bg-blue-600'}
+						${index === 6 ? 'col-span-3 text-center' : ''}`}
+					>
+					{style.charAt(0).toUpperCase() + style.slice(1)}
+				</button>
+			))}
+			</div>
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">Language:</label>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`px-4 py-2 rounded-xl font-semibold border transition ${
+                language === "en"
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-black border-gray-400'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("ms")}
+              className={`px-4 py-2 rounded-xl font-semibold border transition ${
+                language === "ms"
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-black border-gray-400'
+              }`}
+            >
+              Malay
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-900 transition"
+        >
+          Generate Caption
+        </button>
+      </form>
+
+      {caption && (
+        <div className="mt-8 max-w-xl text-center p-4 border rounded-xl shadow">
+          <h2 className="text-xl font-bold mb-2">Generated Caption:</h2>
+          <p className="text-lg">{caption}</p>
+        </div>
+      )}
     </div>
   );
 }

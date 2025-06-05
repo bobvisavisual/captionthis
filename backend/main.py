@@ -1,11 +1,9 @@
-# backend/main.py
-
+import os
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 import base64
-import os
 
 app = FastAPI()
 
@@ -24,8 +22,7 @@ API_URL = "https://openrouter.ai/api/v1/chat/completions"
 async def generate_caption(
     image: UploadFile = File(...),
     type: str = Form(...),
-    language: str = Form(...),
-    context: str = Form("")  # Optional user-provided detail
+    language: str = Form(...)
 ):
     try:
         image_data = await image.read()
@@ -34,32 +31,38 @@ async def generate_caption(
         lang_map = {"en": "English", "ms": "Malay"}
         lang = lang_map.get(language, "English")
 
-        base_prompt = f"Generate a {type} caption in {lang} for the given image."
-        if context:
-            base_prompt += f" Additional details: {context}"
+        prompt = f"<image>\nGenerate a {type.lower()} caption in {lang} for the photo above."
+
+        payload = {
+            "model": "google/gemini-2.0-flash-001",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+                        {"type": "text", "text": prompt}
+                    ]
+                }
+            ],
+            "max_tokens": 100
+        }
 
         headers = {
             "Authorization": f"Bearer {API_KEY}",
             "Content-Type": "application/json"
         }
 
-        # Generate 3 captions
-        captions = []
-        for _ in range(3):
-            payload = {
-                "model": "google/gemini-2.0-flash-001",
-                "messages": [
-                    {"role": "system", "content": "You are a caption generator."},
-                    {"role": "user", "content": base_prompt}
-                ],
-                "max_tokens": 80
-            }
-            response = requests.post(API_URL, json=payload, headers=headers)
-            data = response.json()
-            caption = data["choices"][0]["message"]["content"].strip()
-            captions.append(caption)
+        response = requests.post(API_URL, json=payload, headers=headers)
+        data = response.json()
+        print("🔍 OpenRouter raw response:", data) 
+        # Add this
+        if "choices" not in data:
+            # Error from OpenRouter, return message for debugging
+            error_msg = data.get("error", {}).get("message", "Unknown error")
+            return JSONResponse(content={"caption": f"API Error: {error_msg}"}, status_code=500)
 
-        return JSONResponse(content={"captions": captions})
+        caption = data["choices"][0]["message"]["content"].strip()
+        return JSONResponse(content={"caption": caption})
 
     except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        return JSONResponse(content={"caption": f"Error: {str(e)}"}, status_code=500)
