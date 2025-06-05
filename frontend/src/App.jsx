@@ -218,7 +218,7 @@ function App() {
         <p className="mb-2">
           <strong>Privacy first:</strong> Your uploaded photo is never stored or saved. It is processed temporarily to generate the captions.
         </p>
-        <p className="mb-4 italic">
+        <p className="mb-10 italic">
           AI isn't perfect — always review the captions before posting. Some outputs may be inaccurate or unexpected.
         </p>
         <p>
