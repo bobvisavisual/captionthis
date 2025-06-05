@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-// import axios from "axios"; // Commented out for now
+import axios from "axios"; // Commented out for now
 
 function App() {
   const [image, setImage] = useState(null);
@@ -46,7 +46,7 @@ function App() {
       { caption: "Laughter is the best kind of therapy.", hashtags: "#happyvibes #goodtimes" },
       { caption: "Chillin’ with my favorite humans.", hashtags: "#weekendfun #squadgoals" }
     ]);
-    /* Uncomment when Axios is ready
+    * Uncomment when Axios is ready
     const formData = new FormData();
     formData.append("image", image);
     formData.append("type", captionType);
