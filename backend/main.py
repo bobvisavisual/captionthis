@@ -22,7 +22,8 @@ API_URL = "https://openrouter.ai/api/v1/chat/completions"
 async def generate_caption(
     image: UploadFile = File(...),
     type: str = Form(...),
-    language: str = Form(...)
+    language: str = Form(...),
+    details: str = Form("")
 ):
     try:
         image_data = await image.read()
@@ -31,7 +32,11 @@ async def generate_caption(
         lang_map = {"en": "English", "ms": "Malay"}
         lang = lang_map.get(language, "English")
 
-        prompt = f"<image>\nGenerate a {type.lower()} caption in {lang} for the photo above."
+        prompt = (
+            f"<image>\nGenerate 3 {type.lower()} social media captions in {lang} for the photo above."
+        )
+        if details:
+            prompt += f" Additional context: {details.strip()}"
 
         payload = {
             "model": "google/gemini-2.0-flash-001",
@@ -44,7 +49,7 @@ async def generate_caption(
                     ]
                 }
             ],
-            "max_tokens": 100
+            "max_tokens": 300
         }
 
         headers = {
@@ -54,15 +59,19 @@ async def generate_caption(
 
         response = requests.post(API_URL, json=payload, headers=headers)
         data = response.json()
-        print("🔍 OpenRouter raw response:", data) 
-        # Add this
-        if "choices" not in data:
-            # Error from OpenRouter, return message for debugging
-            error_msg = data.get("error", {}).get("message", "Unknown error")
-            return JSONResponse(content={"caption": f"API Error: {error_msg}"}, status_code=500)
+        print("🔍 OpenRouter raw response:", data)
 
-        caption = data["choices"][0]["message"]["content"].strip()
-        return JSONResponse(content={"caption": caption})
+        if "choices" not in data:
+            error_msg = data.get("error", {}).get("message", "Unknown error")
+            return JSONResponse(content={"captions": [f"API Error: {error_msg}"]}, status_code=500)
+
+        full_text = data["choices"][0]["message"]["content"].strip()
+
+        # Try to split into 3 lines or parts
+        parts = [line.strip("-\u2022. ") for line in full_text.split("\n") if line.strip()]
+        captions = parts[:3] if len(parts) >= 3 else [full_text]
+
+        return JSONResponse(content={"captions": captions})
 
     except Exception as e:
-        return JSONResponse(content={"caption": f"Error: {str(e)}"}, status_code=500)
+        return JSONResponse(content={"captions": [f"Error: {str(e)}"]}, status_code=500)
