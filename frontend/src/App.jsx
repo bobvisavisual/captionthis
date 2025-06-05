@@ -33,8 +33,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center justify-center px-4 py-8">
-      <h1 className="text-4xl md:text-6xl font-bold mb-8 text-center">Caption It!</h1>
-	  <h2 className="text-1xl md:text-2xl font-bold mb-8 text-center">Caption This</h2>
+      <h1 className="text-4xl md:text-6xl font-bold mb-1 text-center">Caption It!</h1>
+	  <h2 className="text-sm md:text-1xl font-semibold mb-8 text-gray-100 uppercase text-center">Caption This</h2>
 
       <form
         onSubmit={handleSubmit}
