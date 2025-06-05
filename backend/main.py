@@ -64,25 +64,25 @@ async def generate_caption(
 
         if "choices" not in data:
             error_msg = data.get("error", {}).get("message", "Unknown error")
-            return JSONResponse(content={"captions": [f"API Error: {error_msg}"]}, status_code=500)
+            return JSONResponse(content={"captions": [{"caption": f"API Error: {error_msg}", "hashtags": ""}]}, status_code=500)
 
         full_text = data["choices"][0]["message"]["content"].strip()
 
         # Clean and filter lines
-blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
+        blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
 
-# Skip the first line if it’s an intro
-if blocks and "caption" in blocks[0].lower():
-    blocks = blocks[1:]
+        # Skip the first line if it’s an intro
+        if blocks and "caption" in blocks[0].lower():
+            blocks = blocks[1:]
 
-# Pair up captions and hashtags
-grouped = []
-for i in range(0, len(blocks), 2):
-    caption = blocks[i]
-    hashtags = blocks[i+1] if i + 1 < len(blocks) else ""
-    grouped.append({"caption": caption, "hashtags": hashtags})
+        # Pair up captions and hashtags
+        grouped = []
+        for i in range(0, len(blocks), 2):
+            caption = blocks[i]
+            hashtags = blocks[i+1] if i + 1 < len(blocks) else ""
+            grouped.append({"caption": caption, "hashtags": hashtags})
 
         return JSONResponse(content={"captions": grouped})
 
     except Exception as e:
-        return JSONResponse(content={"captions": [{"caption": f"API Error: {error_msg}", "hashtags": ""}]}, status_code=500)
+        return JSONResponse(content={"captions": [{"caption": f"Error: {str(e)}", "hashtags": ""}]}, status_code=500)
