@@ -1,6 +1,6 @@
 // frontend/src/App.jsx
 import { useState } from 'react';
-import './App.css';
+// import './App.css';
 
 const captionStyles = ['funny', 'inspiring', 'emotional', 'witty', 'romantic', 'random'];
 const languages = [
@@ -33,7 +33,7 @@ function App() {
     formData.append('details', extraDetails);
 
     try {
-      const response = await fetch('https://your-backend-url.com/generate', {
+      const response = await fetch('https://captionthis.onrender.com/generate', {
         method: 'POST',
         body: formData
       });
