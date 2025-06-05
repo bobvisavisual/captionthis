@@ -68,13 +68,19 @@ async def generate_caption(
 
         full_text = data["choices"][0]["message"]["content"].strip()
 
-        # Attempt to split captions and hashtags
-        blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
-        grouped = []
-        for i in range(0, len(blocks), 2):
-            caption = blocks[i]
-            hashtags = blocks[i+1] if i + 1 < len(blocks) else ""
-            grouped.append({"caption": caption, "hashtags": hashtags})
+        # Clean and filter lines
+blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
+
+# Skip the first line if it’s an intro
+if blocks and "caption" in blocks[0].lower():
+    blocks = blocks[1:]
+
+# Pair up captions and hashtags
+grouped = []
+for i in range(0, len(blocks), 2):
+    caption = blocks[i]
+    hashtags = blocks[i+1] if i + 1 < len(blocks) else ""
+    grouped.append({"caption": caption, "hashtags": hashtags})
 
         return JSONResponse(content={"captions": grouped})
 
