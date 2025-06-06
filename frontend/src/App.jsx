@@ -39,6 +39,15 @@ function App() {
     setImage(null);
     inputRef.current.value = null;
   };
+  
+  const handleReset = () => {
+	setImage(null);
+	setCaptions([]);
+	setDetails("");
+	inputRef.current.value = null;
+	window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -221,6 +230,14 @@ function App() {
               </div>
             </div>
           ))}
+		  <div className="mt-6 text-center">
+			<button
+				onClick={handleReset}
+				className="text-blue-600 font-medium underline hover:text-blue-800 transition"
+			>
+			📷 Caption another image
+			</button>
+			</div>
         </div>
       )}
 
