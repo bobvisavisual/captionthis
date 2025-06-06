@@ -184,32 +184,19 @@ function App() {
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">Language:</label>
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={() => setLanguage("en")}
-              className={`px-4 py-2 rounded-xl font-semibold border transition ${
-                language === "en"
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white text-black border-gray-400'
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage("ms")}
-              className={`px-4 py-2 rounded-xl font-semibold border transition ${
-                language === "ms"
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white text-black border-gray-400'
-              }`}
-            >
-              Malay
-            </button>
-          </div>
-        </div>
+			<label className="block mb-2 font-medium">Language:</label>
+			<select
+				value={language}
+				onChange={(e) => setLanguage(e.target.value)}
+				className="w-full p-3 rounded-xl border border-gray-300 bg-white dark:bg-gray-800 dark:text-white"
+			>
+				<option value="en-us">🇺🇸 English (US)</option>
+				<option value="en-gb">🇬🇧 English (UK)</option>
+				<option value="ms">🇲🇾 Malay</option>
+				<option value="zh">🇨🇳 Chinese</option>
+				<option value="ta">🇮🇳 Tamil</option>
+			</select>
+		</div>
 
         <div>
           <label className="block mb-2 font-medium">Additional Details:</label>
