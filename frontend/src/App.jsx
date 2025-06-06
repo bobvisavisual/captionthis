@@ -35,6 +35,18 @@ function App() {
       setTimeout(() => setCopiedIndex(null), 1500);
     });
   };
+  
+  const handleDownload = (fullText, idx) => {
+    const blob = new Blob([fullText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `caption-${idx + 1}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleRemoveImage = () => {
     setImage(null);
@@ -240,6 +252,12 @@ function App() {
 						className="text-sm text-blue-600 hover:underline"
 					>
 						{copiedIndex === idx ? "Copied!" : "📋 Copy"}
+					</button>
+					<button
+						onClick={() => handleDownload(`${cap.caption}\n${cap.hashtags}`, idx)}
+						className="text-sm text-green-600 hover:underline"
+					>
+						⬇ Download
 					</button>
 					</div>
 				</div>
