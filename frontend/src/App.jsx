@@ -304,14 +304,19 @@ function App() {
 				<div className="mt-6 text-center">
 					<button
 						onClick={handleReset}
-						className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition flex items-center justify-center gap-2"
+						className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition flex items-center gap-2"
 					>
-						<img
-							src="/img/camera_icon.png"
-							alt="Camera"
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
 							className="w-5 h-5"
-						/>
-						Caption another image
+						>
+							<path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25c2.899 0 5.25-2.351 5.25-5.25S14.899 6.75 12 6.75 6.75 9.101 6.75 12s2.351 5.25 5.25 5.25zM12 2.25v.75m0 18v.75m9.75-9.75h-.75m-18 0h-.75m16.97-7.03l-.53.53m-13.94 0l-.53-.53m0 13.94l.53-.53m13.94 0l.53.53" />
+						</svg>
+							Caption another image
 					</button>
 				</div>
 			</>
