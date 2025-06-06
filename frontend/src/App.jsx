@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-// import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const [image, setImage] = useState(null);
@@ -301,8 +300,6 @@ function App() {
           animation: fade-in-up 0.6s ease-out;
         }`}
       </style>
-	  
-	  // <Analytics />
     </div>
   );
 }
