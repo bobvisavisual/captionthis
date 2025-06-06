@@ -84,15 +84,6 @@ function App() {
   }
 };
 
-	const captionStyles = [
-		"funny",
-		"relatable",
-		"inspiring",
-		"trendy",
-		"sassy",
-		"aesthetic"
-	];
-
   return (
     <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"} min-h-screen flex flex-col items-center justify-center px-4 py-8 transition-colors duration-500`}>
 
@@ -161,25 +152,26 @@ function App() {
         <div>
           <label className="block mb-2 font-medium">Caption Style:</label>
           <div className="grid grid-cols-3 gap-3 mb-6">
-            {captionStyles.map((style, index) => (
+            {[
+              { label: "Funny 😂", value: "funny" },
+              { label: "Relatable 😅", value: "relatable" },
+              { label: "Inspiring ✨", value: "inspiring" },
+              { label: "Trendy 🔥", value: "trendy" },
+              { label: "Sassy 😎", value: "sassy" },
+              { label: "Aesthetic 🌸", value: "aesthetic" },
+              { label: "Random 🎲", value: "random" }
+            ].map((style, index) => (
               <button
-                key={style}
+                key={style.value}
                 type="button"
-                onClick={() => setCaptionType(style)}
+                onClick={() => setCaptionType(style.value)}
                 className={`px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
-                  ${captionType === style ? 'bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}
+                  ${captionType === style.value ? 'bg-blue-700' : style.value === 'random' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-500 hover:bg-blue-600'}
+                  ${index === 6 ? 'col-span-3 text-center' : ''}`}
               >
-                {style.charAt(0).toUpperCase() + style.slice(1)}
+                {style.label}
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => setCaptionType("random")}
-              className={`col-span-3 px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
-                ${captionType === "random" ? 'bg-purple-700' : 'bg-purple-600 hover:bg-purple-700'}`}
-            >
-              Random
-            </button>
           </div>
         </div>
 
