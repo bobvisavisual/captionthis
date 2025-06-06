@@ -70,13 +70,13 @@ async def generate_caption(
         
         import re
 
-        # Trim everything before the first caption (if any)
-        caption_start = re.search(r"\*\*?Caption\s*1\*\*?:?", full_text, re.IGNORECASE)
+        # Attempt to trim intro before "1." or "**Caption 1:**"
+        caption_start = re.search(r"(?:\*\*?Caption\s*1\*\*?:?|^1\.)", full_text, re.IGNORECASE | re.MULTILINE)
         if caption_start:
             full_text = full_text[caption_start.start():]
 
-        # Split on "**Caption X:**" style
-        blocks = re.split(r"\*\*?Caption\s*\d\*\*?:?", full_text)
+        # Try to split based on either markdown-style or number-style headings
+        blocks = re.split(r"(?:\*\*?Caption\s*\d\*\*?:?|^\d\.\s*)", full_text, flags=re.IGNORECASE | re.MULTILINE)
         blocks = [block.strip() for block in blocks if block.strip()]
 
         grouped = []
@@ -86,7 +86,7 @@ async def generate_caption(
             hashtags = []
 
             for line in lines:
-                if "#" in line:
+                if "#" in line or re.search(r"#\w+", line):
                     hashtags.append(line.strip())
                 else:
                     caption_lines.append(line.strip())
@@ -96,7 +96,7 @@ async def generate_caption(
                 "hashtags": " ".join(hashtags).strip()
             })
 
-        # Fallback if grouping fails
+        # Final fallback
         if not grouped:
             grouped = [{"caption": full_text.strip(), "hashtags": ""}]
 
