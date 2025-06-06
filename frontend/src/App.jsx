@@ -11,6 +11,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   const inputRef = useRef();
   const [loading, setLoading] = useState(false);
+  const captionsRef = useRef(null);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -57,6 +58,8 @@ function App() {
   }
 
   setLoading(true); // show spinner
+  captionsRef.current?.scrollIntoView({ behavior: "smooth" });
+
   const formData = new FormData();
   formData.append("image", image);
   formData.append("type", captionType);
@@ -208,13 +211,13 @@ function App() {
       </form>
 
       {loading && (
-        <div className="mt-8 text-center text-lg font-medium animate-pulse">
+        <div ref={captionsRef} className="mt-8 text-center text-lg font-medium animate-pulse">
           Generating captions...
         </div>
       )}
 
       {captions.length > 0 && (
-        <div className="mt-8 max-w-xl text-center space-y-4">
+        <div ref={captionsRef} className="mt-8 max-w-xl text-center space-y-4">
           <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
           {captions.map((cap, idx) => (
             <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
