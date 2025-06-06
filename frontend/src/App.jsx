@@ -221,36 +221,38 @@ function App() {
       )}
 
       {captions.length > 0 && (
-        <div ref={captionsRef} className="mt-8 max-w-xl text-center space-y-4">
+		<div ref={captionsRef} className="mt-8 max-w-xl text-center space-y-4">
 			{loading ? (
 			<p className="text-center text-gray-500">Generating captions...</p>
 			) : (
 			<>
-          <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
-          {captions.map((cap, idx) => (
-            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
-              <p className="text-sm font-medium mb-1">{cap.caption}</p>
-              <p className="text-sm text-gray-600 mb-3">{cap.hashtags}</p>
-              <div className="text-right">
-                <button
-                  onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  {copiedIndex === idx ? "Copied!" : "📋 Copy"}
-                </button>
-              </div>
-            </div>
-          ))}
-		  <div className="mt-6 text-center">
-			<button
-				onClick={handleReset}
-				className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
-			>
-			📷 Caption another image
-			</button>
-			</div>
-        </>
-      )}
+				<h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
+				{captions.map((cap, idx) => (
+				<div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
+					<p className="text-sm font-medium mb-1">{cap.caption}</p>
+					<p className="text-sm text-gray-600 mb-3">{cap.hashtags}</p>
+					<div className="text-right">
+					<button
+						onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
+						className="text-sm text-blue-600 hover:underline"
+					>
+						{copiedIndex === idx ? "Copied!" : "📋 Copy"}
+					</button>
+					</div>
+				</div>
+				))}
+				<div className="mt-6 text-center">
+				<button
+					onClick={handleReset}
+					className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
+				>
+					📷 Caption another image
+				</button>
+				</div>
+			</>
+			)}
+		</div>
+		)}
 
       <footer className="mt-12 max-w-xl text-center text-sm text-gray-500 px-6">
         <p className="mb-2">
