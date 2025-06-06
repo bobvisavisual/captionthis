@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 import base64
+import re
 
 app = FastAPI()
 
@@ -29,15 +30,25 @@ async def generate_caption(
         image_data = await image.read()
         base64_image = base64.b64encode(image_data).decode("utf-8")
 
-        lang_map = {"en": "English", "ms": "Malay"}
+        # Updated language map for more granularity
+        lang_map = {
+            "en-US": "English (US)",
+            "en-UK": "English (UK)",
+            "ms": "Malay",
+            "zh": "Chinese",
+            "ta": "Tamil"
+        }
         lang = lang_map.get(language, "English")
 
         prompt = (
-            f"<image>\nGenerate 3 {type.lower()} social media captions in {lang} for the photo above. "
-            f"Each caption should be followed by 2–3 relevant hashtags."
+            f"You are an expert caption generator."
+            f" Generate exactly 3 {type.lower()} social media captions in {lang} for the given photo."
+            f" Each caption should be numbered (1., 2., 3.) and followed by 2–3 relevant hashtags on the next line."
+            f" Respond only with the captions and hashtags, no explanations."
         )
+
         if details:
-            prompt += f" Additional context: {details.strip()}"
+            prompt += f"\nAdditional context: {details.strip()}"
 
         payload = {
             "model": "google/gemini-2.0-flash-001",
@@ -68,15 +79,19 @@ async def generate_caption(
 
         full_text = data["choices"][0]["message"]["content"].strip()
 
-        # Attempt to split captions and hashtags
-        blocks = [line.strip("-• ") for line in full_text.split("\n") if line.strip()]
+        # Parsing logic with multilingual tolerance (supports 1./２．/١. etc)
+        parts = re.split(r"(?:(?<=\n)|^)[\d１２٣一二三١٢٣][\.:、\-)]\s*", full_text)
         grouped = []
-        for i in range(0, len(blocks), 2):
-            caption = blocks[i]
-            hashtags = blocks[i+1] if i + 1 < len(blocks) else ""
+
+        for part in parts:
+            if not part.strip():
+                continue
+            lines = part.strip().split("\n")
+            caption = lines[0].strip()
+            hashtags = " ".join(lines[1:]).strip() if len(lines) > 1 else ""
             grouped.append({"caption": caption, "hashtags": hashtags})
 
         return JSONResponse(content={"captions": grouped})
 
     except Exception as e:
-        return JSONResponse(content={"captions": [f"Error: {str(e)}"]}, status_code=500)
+        return JSONResponse(content={"captions": [{"caption": f"API Error: {str(e)}", "hashtags": ""}]}, status_code=500)

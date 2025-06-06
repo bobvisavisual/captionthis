@@ -10,6 +10,8 @@ function App() {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const inputRef = useRef();
+  const [loading, setLoading] = useState(false);
+  const captionsRef = useRef(null);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -33,29 +35,75 @@ function App() {
       setTimeout(() => setCopiedIndex(null), 1500);
     });
   };
+  
+  const handleDownload = (fullText, idx) => {
+    const blob = new Blob([fullText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `caption-${idx + 1}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleRemoveImage = () => {
     setImage(null);
     inputRef.current.value = null;
   };
+  
+  const handleReset = () => {
+	setImage(null);
+	setCaptions([]);
+	setDetails("");
+	inputRef.current.value = null;
+	window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("type", captionType);
-    formData.append("language", language);
-    formData.append("details", details);
+  e.preventDefault();
+  if (!image) {
+    alert("Please upload an image first.");
+    return;
+  }
 
-    try {
-      const response = await axios.post("https://captionthis.onrender.com/generate", formData);
-      setCaptions(response.data.captions || []);
-    } catch (error) {
-      setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
-    }
-    
-  };
+  setLoading(true); // show spinner
+  setCaptions([]);
+  // Delay scroll into view by 100ms
+  setTimeout(() => {
+    captionsRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, 100);
+
+  const formData = new FormData();
+  formData.append("image", image);
+  formData.append("type", captionType);
+  formData.append("language", language);
+  formData.append("details", details);
+
+  try {
+    const response = await axios.post("https://captionthis.onrender.com/generate", formData);
+    const result = response.data.captions;
+    const safeCaptions = result.map((c) =>
+      typeof c === "string" ? { caption: c, hashtags: "" } : c
+    );
+    setCaptions(safeCaptions);
+  } catch (error) {
+    setCaptions([{ caption: "API Error: " + error.message, hashtags: "" }]);
+  } finally {
+    setLoading(false); // hide spinner
+  }
+};
+
+	const captionStyles = [
+		"funny",
+		"relatable",
+		"inspiring",
+		"trendy",
+		"sassy",
+		"aesthetic"
+	];
 
   return (
     <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"} min-h-screen flex flex-col items-center justify-center px-4 py-8 transition-colors duration-500`}>
@@ -98,10 +146,10 @@ function App() {
             <input
               type="file"
               accept="image/*"
+              name="image"
               onChange={handleImageChange}
               className="hidden"
               ref={inputRef}
-              required
             />
           </label>
           {image && (
@@ -125,48 +173,42 @@ function App() {
         <div>
           <label className="block mb-2 font-medium">Caption Style:</label>
           <div className="grid grid-cols-3 gap-3 mb-6">
-            {["funny", "inspiring", "emotional", "witty", "romantic", "executive", "random"].map((style, index) => (
+            {captionStyles.map((style, index) => (
               <button
                 key={style}
                 type="button"
                 onClick={() => setCaptionType(style)}
                 className={`px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
-                  ${captionType === style ? 'bg-blue-700' : style === 'random' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-500 hover:bg-blue-600'}
-                  ${index === 6 ? 'col-span-3 text-center' : ''}`}
+                  ${captionType === style ? 'bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}
               >
                 {style.charAt(0).toUpperCase() + style.slice(1)}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() => setCaptionType("random")}
+              className={`col-span-3 px-4 py-2 rounded-xl text-white font-semibold transition-colors duration-300
+                ${captionType === "random" ? 'bg-purple-700' : 'bg-purple-600 hover:bg-purple-700'}`}
+            >
+              Random
+            </button>
           </div>
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">Language:</label>
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={() => setLanguage("en")}
-              className={`px-4 py-2 rounded-xl font-semibold border transition ${
-                language === "en"
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white text-black border-gray-400'
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage("ms")}
-              className={`px-4 py-2 rounded-xl font-semibold border transition ${
-                language === "ms"
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white text-black border-gray-400'
-              }`}
-            >
-              Malay
-            </button>
-          </div>
-        </div>
+			<label className="block mb-2 font-medium">Language:</label>
+			<select
+				value={language}
+				onChange={(e) => setLanguage(e.target.value)}
+				className="w-full p-3 rounded-xl border border-gray-300 bg-white dark:bg-gray-800 dark:text-white"
+			>
+				<option value="en-us">🇺🇸 English (US)</option>
+				<option value="en-gb">🇬🇧 English (UK)</option>
+				<option value="ms">🇲🇾 Malay</option>
+				<option value="zh">🇨🇳 Chinese</option>
+				<option value="ta">🇮🇳 Tamil</option>
+			</select>
+		</div>
 
         <div>
           <label className="block mb-2 font-medium">Additional Details:</label>
@@ -187,23 +229,51 @@ function App() {
         </button>
       </form>
 
-      {captions.length > 0 && (
-        <div className="mt-8 max-w-xl text-center space-y-4">
-          <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
-          {captions.map((cap, idx) => (
-            <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left relative animate-fade-in-up">
-              <p className="text-lg font-medium mb-1">{cap.caption}</p>
-              <p className="text-sm text-gray-500 mb-2">{cap.hashtags}</p>
-              <button
-                onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
-                className="absolute top-2 right-2 text-sm text-blue-600 hover:underline"
-              >
-                {copiedIndex === idx ? "Copied!" : "📋 Copy"}
-              </button>
-            </div>
-          ))}
+      {loading && (
+        <div ref={captionsRef} className="mt-8 text-center text-lg font-medium animate-pulse">
+          Generating captions...
         </div>
       )}
+
+      {captions.length > 0 && (
+		<div ref={captionsRef} className="mt-8 max-w-xl text-center space-y-4">
+			{loading ? (
+			<p className="text-center text-gray-500">Generating captions...</p>
+			) : (
+			<>
+				<h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
+				{captions.map((cap, idx) => (
+				<div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
+					<p className="text-sm font-medium mb-1">{cap.caption}</p>
+					<p className="text-sm text-gray-600 mb-3">{cap.hashtags}</p>
+					<div className="text-right">
+					<button
+						onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
+						className="text-sm text-blue-600"
+					>
+						{copiedIndex === idx ? "Copied!" : "📋 Copy"}
+					</button>
+					<button
+						onClick={() => handleDownload(`${cap.caption}\n${cap.hashtags}`, idx)}
+						className="text-sm text-green-600 ml-4"
+					>
+						⬇ Download
+					</button>
+					</div>
+				</div>
+				))}
+				<div className="mt-6 text-center">
+				<button
+					onClick={handleReset}
+					className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
+				>
+					📷 Caption another image
+				</button>
+				</div>
+			</>
+			)}
+		</div>
+		)}
 
       <footer className="mt-12 max-w-xl text-center text-sm text-gray-500 px-6">
         <p className="mb-2">
