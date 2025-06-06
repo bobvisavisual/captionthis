@@ -249,13 +249,13 @@ function App() {
 					<div className="text-right">
 					<button
 						onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
-						className="text-sm text-blue-600 hover:underline"
+						className="text-sm text-blue-600"
 					>
 						{copiedIndex === idx ? "Copied!" : "📋 Copy"}
 					</button>
 					<button
 						onClick={() => handleDownload(`${cap.caption}\n${cap.hashtags}`, idx)}
-						className="text-sm text-green-600 hover:underline"
+						className="text-sm text-green-600 ml-4"
 					>
 						⬇ Download
 					</button>
