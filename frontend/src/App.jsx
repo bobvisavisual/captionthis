@@ -38,7 +38,7 @@ function App() {
   };
   
   const handleDownload = (fullText, idx) => {
-    const blob = new Blob([fullText], { type: "text/plain" });
+    const blob = new Blob([fullText], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -247,18 +247,56 @@ function App() {
 				<div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
 					<p className="text-sm font-medium mb-1">{cap.caption}</p>
 					<p className="text-sm text-gray-600 mb-3">{cap.hashtags}</p>
-					<div className="text-right">
+					<div className="flex justify-end gap-4 mt-2">
+					{/* WhatsApp */}
 					<button
-						onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
-						className="text-sm text-blue-600"
+						onClick={() =>
+							window.open(
+								`https://wa.me/?text=${encodeURIComponent(`${cap.caption}\n${cap.hashtags}\nhttps://captionthis.ai`)}`,
+								"_blank"
+							)
+						}
+						title="Share on WhatsApp"
+						className="hover:opacity-80"
 					>
-						{copiedIndex === idx ? "Copied!" : "📋 Copy"}
+						<svg xmlns="http://www.w3.org/2000/svg" fill="#25D366" viewBox="0 0 24 24" width="20" height="20">
+							<path d="M20.52 3.48a11.81 11.81 0 00-16.7 0 11.81 11.81 0 00-1.51 14.9L2 22l3.65-1.02a11.82 11.82 0 0014.87-1.5 11.81 11.81 0 000-16.7zm-5.52 13c-.7.78-1.56.9-2.66.53-1.1-.36-2.35-1.23-3.56-2.43s-2.07-2.46-2.43-3.56c-.37-1.1-.25-1.96.53-2.66.47-.43.9-.68 1.27-.72.36-.03.74.05 1.12.23.26.13.5.36.73.68.23.33.4.57.5.72.13.2.17.4.12.6-.05.2-.2.42-.43.66l-.53.56c-.1.1-.16.2-.17.3s.03.23.14.36c.5.65 1.07 1.23 1.7 1.74.5.4.9.6 1.2.6.1 0 .21-.06.33-.17l.47-.44c.22-.2.44-.3.65-.27.21.03.44.2.7.52.26.3.46.62.6.93.3.73.18 1.32-.34 1.86z"/>
+						</svg>
 					</button>
+					{/* Twitter/X */}
+					<button
+						onClick={() =>
+							window.open(
+								`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${cap.caption}\n${cap.hashtags}\nhttps://captionthis.ai`)}`,
+								"_blank"
+							)
+						}
+						title="Share on X"
+						className="hover:opacity-80"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24" width="20" height="20">
+							<path d="M4 4h4l5 7 5-7h4l-7.5 10L20 20h-4l-5-7-5 7H4l7.5-10L4 4z" />
+						</svg>
+					</button>
+					{/* Download */}
 					<button
 						onClick={() => handleDownload(`${cap.caption}\n${cap.hashtags}`, idx)}
-						className="text-sm text-green-600 ml-4"
+						title="Download caption"
+						className="hover:opacity-80"
 					>
-						⬇ Download
+						<svg xmlns="http://www.w3.org/2000/svg" fill="#4B5563" viewBox="0 0 24 24" width="20" height="20">
+							<path d="M12 16l4-5h-3V4h-2v7H8l4 5zm8 4H4v-2h16v2z"/>
+						</svg>
+					</button>
+					{/* Copy */}
+					<button
+						onClick={() => handleCopy(`${cap.caption}\n${cap.hashtags}`, idx)}
+						title="Copy to clipboard"
+						className="hover:opacity-80"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" fill="#4B5563" viewBox="0 0 24 24" width="20" height="20">
+							<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+						</svg>
 					</button>
 					</div>
 				</div>
