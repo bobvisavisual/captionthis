@@ -249,9 +249,9 @@ function App() {
 			📷 Caption another image
 			</button>
 			</div>
-			</>
-        </div>
+        </>
       )}
+	  </div>
 
       <footer className="mt-12 max-w-xl text-center text-sm text-gray-500 px-6">
         <p className="mb-2">
