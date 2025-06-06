@@ -233,7 +233,7 @@ function App() {
 		  <div className="mt-6 text-center">
 			<button
 				onClick={handleReset}
-				className="text-sm text-blue-600 font-light hover:text-blue-800 transition"
+				className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition"
 			>
 			📷 Caption another image
 			</button>
