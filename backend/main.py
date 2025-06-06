@@ -70,13 +70,13 @@ async def generate_caption(
         
         import re
 
-        # Trim intro text before first caption
-        caption_start = re.search(r"(?=\\*\\*?Caption\\s*1\\*\\*?:?)", full_text, re.IGNORECASE)
+        # Trim everything before the first caption (if any)
+        caption_start = re.search(r"\*\*?Caption\s*1\*\*?:?", full_text, re.IGNORECASE)
         if caption_start:
             full_text = full_text[caption_start.start():]
 
-        # Split on "**Caption X:**" format
-        blocks = re.split(r"\\*\\*?Caption\\s*\\d\\*\\*?:?", full_text)
+        # Split on "**Caption X:**" style
+        blocks = re.split(r"\*\*?Caption\s*\d\*\*?:?", full_text)
         blocks = [block.strip() for block in blocks if block.strip()]
 
         grouped = []
@@ -96,7 +96,7 @@ async def generate_caption(
                 "hashtags": " ".join(hashtags).strip()
             })
 
-        # Fallback if none grouped
+        # Fallback if grouping fails
         if not grouped:
             grouped = [{"caption": full_text.strip(), "hashtags": ""}]
 
