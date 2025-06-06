@@ -58,7 +58,11 @@ function App() {
   }
 
   setLoading(true); // show spinner
-  captionsRef.current?.scrollIntoView({ behavior: "smooth" });
+  setCaptions([]);
+  // Delay scroll into view by 100ms
+  setTimeout(() => {
+    captionsRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, 100);
 
   const formData = new FormData();
   formData.append("image", image);
@@ -218,6 +222,10 @@ function App() {
 
       {captions.length > 0 && (
         <div ref={captionsRef} className="mt-8 max-w-xl text-center space-y-4">
+			{loading ? (
+			<p className="text-center text-gray-500">Generating captions...</p>
+			) : (
+			<>
           <h2 className="text-xl font-bold mb-4">Generated Captions:</h2>
           {captions.map((cap, idx) => (
             <div key={idx} className="bg-white border rounded-xl p-4 shadow text-left animate-fade-in-up">
@@ -242,6 +250,7 @@ function App() {
 			</button>
 			</div>
         </div>
+		</>
       )}
 
       <footer className="mt-12 max-w-xl text-center text-sm text-gray-500 px-6">
