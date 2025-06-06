@@ -29,8 +29,14 @@ async def generate_caption(
         image_data = await image.read()
         base64_image = base64.b64encode(image_data).decode("utf-8")
 
-        lang_map = {"en": "English", "ms": "Malay"}
-        lang = lang_map.get(language, "English")
+        lang_map = {
+            "en-us": "English (US)",
+            "en-gb": "English (UK)",
+            "ms": "Malay",
+            "zh": "Chinese",
+            "ta": "Tamil"
+        }
+        lang = lang_map.get(language, "English (US)")
 
         prompt = (
             f"<image>\nGenerate 3 {type.lower()} social media captions in {lang} for the photo above. "
