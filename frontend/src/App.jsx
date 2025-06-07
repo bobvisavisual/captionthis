@@ -301,13 +301,13 @@ function App() {
 					</div>
 				</div>
 				))}
-				<div className="mt-6 text-center">
+				<div className="mt-6 text-center justify-center">
 					<button
 						onClick={handleReset}
 						className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition flex items-center justify-center gap-2"
 					>
 						<img
-							src="/icons/camera_icon.png"
+							src="/img/camera_icon.png"
 							alt="Camera"
 							className="w-5 h-5"
 						/>
