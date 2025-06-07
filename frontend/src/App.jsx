@@ -306,9 +306,19 @@ function App() {
 						onClick={handleReset}
 						className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-900 transition flex items-center gap-2"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 24 24" width="20" height="20">
-							<path d="M10 10 L 30 10 M 10 30 L 30 30 M 20 20 L 20 20" stroke="black" stroke-width="3" />
-							<circle cx="20" cy="20" r="10" fill="white" stroke="black" stroke-width="2" />
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="w-5 h-5"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							strokeWidth={2}
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M3 8l1.5-2.5A1 1 0 015.4 5h13.2a1 1 0 01.9.5L21 8m-9 5a3 3 0 100-6 3 3 0 000 6zm10 6H3a1 1 0 01-1-1V8a1 1 0 011-1h18a1 1 0 011 1v10a1 1 0 01-1 1z"
+							/>
 						</svg>
 						Caption another image
 					</button>
