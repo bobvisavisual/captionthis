@@ -252,7 +252,7 @@ function App() {
 					<button
 						onClick={() =>
 							window.open(
-								`https://wa.me/?text=${encodeURIComponent(`${cap.caption}\n${cap.hashtags}\nhttps://captionthis.ai`)}`,
+								`https://wa.me/?text=${encodeURIComponent(`${cap.caption}\n${cap.hashtags}\nhttps://captionthis.aimusebox.com`)}`,
 								"_blank"
 							)
 						}
@@ -267,7 +267,7 @@ function App() {
 					<button
 						onClick={() =>
 							window.open(
-								`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${cap.caption}\n${cap.hashtags}\nhttps://captionthis.ai`)}`,
+								`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${cap.caption}\n${cap.hashtags}\nhttps://captionthis.aimusebox.com`)}`,
 								"_blank"
 							)
 						}
