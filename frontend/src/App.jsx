@@ -308,17 +308,11 @@ function App() {
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							className="w-5 h-5"
-							fill="none"
 							viewBox="0 0 24 24"
-							stroke="currentColor"
-							strokeWidth={2}
+							fill="currentColor"
+							className="w-5 h-5"
 						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M3 8l1.5-2.5A1 1 0 015.4 5h13.2a1 1 0 01.9.5L21 8m-9 5a3 3 0 100-6 3 3 0 000 6zm10 6H3a1 1 0 01-1-1V8a1 1 0 011-1h18a1 1 0 011 1v10a1 1 0 01-1 1z"
-							/>
+							<path d="M20 5h-3.586l-1.707-1.707A1 1 0 0014 3H10a1 1 0 00-.707.293L7.586 5H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V7a2 2 0 00-2-2zM12 17a4 4 0 110-8 4 4 0 010 8z" />
 						</svg>
 						Caption another image
 					</button>
